@@ -48,9 +48,11 @@
             bezier(ctx, ox, oy, ox, oy+h2, ox+r, oy+h2, ox+r, oy);        
         }
         
-        ctx.stroke();
     }
 
     render(false);
     render(true);
+
+    ctx.fillStyle = 'rgba(255,0,0,.4)';
+    ctx.fill();
 })();
