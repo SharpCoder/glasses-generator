@@ -2,12 +2,12 @@ function cubic_bezier(t, x0, x1, x2, x3) =
     pow((1 - t), 3) * x0 + 3 * pow(1 - t, 2) * t * x1 + 3 * (1-t)*pow(t,2)*x2 + pow(t,3)*x3;
 
 module glasses(
-    bridge_distance = 17,
+    bridge_distance = 16,
     bridge_start = 0.25,
-    lens_width = 45,
-    theta1 = 25,
-    theta2 = 33,
-    thickness = 2
+    lens_width = 47,
+    theta1 = 30,
+    theta2 = 23,
+    thickness = 1.5
 ) {
     
     // These define a bunch of bezier curves and simply take an interpolation point
@@ -41,6 +41,31 @@ module glasses(
             [x1 + bridge_distance/2 + thickness, y1],
         ]);
     }
+    
+    module temple_connector() {
+        
+        temple_width = 4;
+        temple_height = 4;
+        
+        theta = 0.8;
+        x = bx_top(theta, thickness);
+        y = by_top(theta, thickness);
+        x2 = bx_top(0.5, thickness);
+        y2 = by_top(0.5, thickness);
+        
+        translate([x,y,0])
+        union() {
+            square([temple_width, temple_height]);
+            polygon([
+                [0,temple_height],
+                [0,0],
+                for (t = [theta: -0.05: 0.5])
+                    [bx_top(t, thickness)-x, by_top(t, thickness)-y]
+                
+                ]
+            );
+        }
+    }
 
     // Lens part
     module frame(
@@ -68,16 +93,24 @@ module glasses(
 
     
     // Assemble everything
-    color("gray")
-    linear_extrude(4)
+    color("#505050")
+    linear_extrude(2)
     union() {
         translate([bridge_distance/2 + thickness, 0, 0])
-        frame();
+        union() {
+            frame();
+            temple_connector();
+        }
+        
         bridge();
         
         translate([-bridge_distance/2 - thickness, 0, 0])
         mirror([-1, 0, 0])
-        frame();
+        union() {
+            frame();
+            temple_connector();
+        }
+        
     }
 }
 

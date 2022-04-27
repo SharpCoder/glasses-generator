@@ -8,8 +8,9 @@
 
     ctx.lineWidth = 3;
 
-    let rand1 = (Math.random() * 100) + 50;
-    let rand2 = (Math.random() * 100) + 50;
+    let rand1 = (Math.random() * 20) + 15;
+    let rand2 = (Math.random() * 30) + 15;
+    let rand3 = (Math.random() * 30);
 
 
     function b(t, x0, x1, x2, x3) {
@@ -30,17 +31,18 @@
 
 
     function render(mirror=false) {
-        let r = 200;
-        let h = -rand1;
-        let h2 = rand2;
+        const scale = 5;
+        let r = (30 + rand3) * scale;
+        let h = -rand1 * scale;
+        let h2 = rand2 * scale;
 
         let ox = (canvas.width - r*2) / 2;
         let oy = canvas.height / 2;
         
-        console.log({ r, h, h2 });
+        console.log({ r: r/scale, h: h/scale, h2: h2/scale });
 
         if (mirror) {
-            ox += r + 30; 
+            ox += r + 17 * scale/2; 
             bezier(ctx, ox, oy, ox, oy+h, ox+r, oy-h2, ox+r, oy);
             bezier(ctx, ox, oy, ox, oy+h2, ox+r, oy+h2, ox+r, oy);        
         } else {
