@@ -18,6 +18,8 @@
 
     function bezier(ctx, ox, oy, x, y, x2, y2, x3, y3) {
 
+        ctx.moveTo(ox, oy);
+
         for (let i = 0; i <= 1; i += 0.02) {
             let [bx, by] = [b(i, ox, x, x2, x3), b(i, oy, y, y2, y3)];
             ctx.lineTo(bx, by);
@@ -35,29 +37,20 @@
         let ox = (canvas.width - r*2) / 2;
         let oy = canvas.height / 2;
         
+        console.log({ r, h, h2 });
 
         if (mirror) {
-            ox += r + 30;
-            ctx.moveTo(ox, oy);        
+            ox += r + 30; 
             bezier(ctx, ox, oy, ox, oy+h, ox+r, oy-h2, ox+r, oy);
-            ctx.moveTo(ox, oy);
             bezier(ctx, ox, oy, ox, oy+h2, ox+r, oy+h2, ox+r, oy);        
         } else {
-            ctx.moveTo(ox, oy);
-            bezier(ctx, ox, oy, ox, oy+h, ox+r, oy-h2, ox+r, oy);
-            ctx.moveTo(ox, oy);
+            bezier(ctx, ox, oy, ox, oy-h2, ox+r, oy+h, ox+r, oy);
             bezier(ctx, ox, oy, ox, oy+h2, ox+r, oy+h2, ox+r, oy);        
         }
-        
-        
         
         ctx.stroke();
     }
 
-    ctx.save();
     render(false);
-    ctx.restore();
-    ctx.save();
     render(true);
-    ctx.restore();
 })();
