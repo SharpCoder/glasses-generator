@@ -18,6 +18,15 @@ function bezier_bot(scale, w, theta1, theta2) = [for (t = [0: 0.02: 1])
     [bx_bot(t, w, theta1, theta2, scale), by_bot(t, w, theta1, theta2, scale)]
 ];
 
+module duplicate(x=0, y=0, z=0, spacing=0) {
+    translate([spacing/2, 0, 0])
+    children();
+    
+    translate([-spacing/2, 0, 0])
+    mirror([x, y, z])
+    children();
+    
+}
 
 // Lens part
 module frame(

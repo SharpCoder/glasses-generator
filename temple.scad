@@ -100,4 +100,9 @@ module temple(reversed=false) {
 }
 
 
+translate([drop_width, 0, 0])
+temple();
+
+translate([-drop_width, 0, 0])
+mirror([-1, 0, 0])
 temple();

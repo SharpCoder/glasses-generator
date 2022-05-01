@@ -1,22 +1,22 @@
 include <parameters.scad>
 
 // Main hinge design
-hex_z = 1.75;
-hex_bore = 4;
+hex_z = 2;
+hex_bore = 4 + .1;
 bolt_bore = 2;
 
 // General sizing parameters
-spacing = 2.2;
+spacing = 2;
 base_h = 2;
 
-hinge_w = 3.25;
-hinge_h = 7;
+hinge_w = 4;
+hinge_h = 6+3.25;
 hinge_z = 5;
 
 
 // Red thing
 wall_z = 1;
-wall_h = base_h + hinge_h + .25;
+wall_h = base_h + hinge_h - 1.5;
 
 function hinge_height() = hinge_w*2+spacing;
 function hinge_width() = wall_z + hinge_z;
@@ -40,7 +40,7 @@ module hinge_wall() {
             // Main bolt channel
             color("red")
             linear_extrude(hinge_w)
-            circle(d=bolt_bore + tol, $fn=8);
+            circle(d=bolt_bore + tol, $fn=10);
             
             // Nut channel
             translate([0, 0, hinge_w-hex_z])
@@ -80,10 +80,12 @@ module hinge() {
             square([hinge_height(), wall_z], center=true);   
         }
  
+        /*
         // Cut out one side
         translate([spacing/2+hinge_w-hex_z+5, -wall_z/2, 0])
         linear_extrude(10)
         square([10, 10], center=true);
+        */
     }
 }
 
