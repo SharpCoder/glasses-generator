@@ -1,46 +1,103 @@
-drop_length = 35;
-l = 105;
-w = 3;
-depth = 1;
+include <parameters.scad>
 
-// Temple
-minkowski() {
-    union() {
-        // Main length of temple
-        linear_extrude(depth)
-        square([1,l], center=true);
+hinge_w = 3.25;
+base_x = 4;
+base_y = 14;
+
+spacing = 2;
+bore = 2.2;
+
+temple_length = 95;
+temple_wall = hinge_w*2+spacing;
+temple_width = 10;
+
+
+drop_angle = 45;
+drop_width = hinge_w+spacing;
+
+// The fin that looks cool at the base
+module fin() {
+    polygon([
+        [0,0],
+        [temple_width/2, 0],
+        [temple_wall/2, 10],
+        [-temple_wall/2, 10],
+        [-temple_width/2,0],
+    ]);
+}
+
+module thinner() {
+    x0 = hinge_w+spacing;
+    l1 = 50;
+    
+    mirror([0, -1, 0])
+    polygon([
+        [-x0/2, 0],
+        [x0/2, 0],
+        [x0/2, l1],
+        [x0/2, temple_length],
+        [-x0/2,temple_length],
+        [-x0/2,l1],
+    ]);
+ 
+}
+
+module pin() {    
+    translate([-hinge_w/2+spacing/2, -7+4.5, 0])
+    linear_extrude(spacing)
+    difference() {
+        union() {
+            square([base_x, base_y], center=true);
+            translate([0, base_y/2, 0])
+            circle(d=base_x, $fn=100);
+        }
         
-        // temple drop
-        linear_extrude(depth)
-        translate([0,-l/2,0])
-        rotate(180-45) /* temple drop amount, generally 45 degrees */
-        square([1,drop_length], center=false);
+        translate([0, base_y/2, 0])
+        circle(d=bore + tol, $fn=100);
     }
-    
-    linear_extrude(1)
-    circle(d=w);
 }
 
-// Hinge
-difference() {
-    
-    hinge_depth = 1.5;
-    hinge_length = 5;
-    m = 3;
-    
-    color("red")
-    minkowski() {
-        translate([0,l/2-2.5,depth])
-        linear_extrude(hinge_length)
-        square([hinge_depth,4], center=true);
-        linear_extrude(1)
-        circle(d=1);
-    }
+module temple(reversed=false) {
 
-    
-    translate([-50,0,depth]) /* Depth of hinge bore */
-    rotate([0,90,0])   /* Hinge rotation */
-    linear_extrude(100) /* Bore depth */
-    translate([-hinge_length/2-.7,l/2-2.5,0]) /* Position the hinge half way down the length of the temple */
-    circle(d=m, $fn=100);
+    pin();
+
+    difference() {
+            
+        translate([temple_width/2-temple_width/2, 0, -(hinge_w+spacing)/2])
+        union() {
+            
+            difference() {
+                
+                union() {
+                    linear_extrude(temple_wall)
+                    thinner();
+
+                }
+
+                w = temple_length+base_y+10;
+                h = 11;
+                translate([-40, 0, (hinge_w+spacing)/2])
+                rotate([0, 180-90, 0])
+                translate([-10, -w, 0])
+                linear_extrude(120)
+                polygon([
+                    [0, 0],
+                    [h, 4],
+                    [h, w-20],
+                    [0, w-0],
+                    [0, 0],
+                ]);            
+            }
+            
+            drop_length = 40;
+            translate([-drop_width/2, -temple_length+base_y-3.7, -10.2])
+            rotate([-drop_angle, 0, 0])
+            translate([0,-(base_y+temple_length)/2,0])
+            linear_extrude(3)
+            square([drop_width, drop_length]);
+        }
+    }
 }
+
+
+temple();
