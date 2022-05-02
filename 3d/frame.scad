@@ -6,12 +6,13 @@ include <hinge.scad>
 theta1 = 27;
 theta2 = 29;
 lens_width = 43;
-thickness = 2.5;
+thickness = 3.5;
 bridge_distance = 25;
 lens_depth = 3.75;
 bridge_start = 0.22;
+lens_attachment_dia = 1;
 
-module lens_attachment(perc, tol=0.0, bottom=false) {
+module lens_attachment(perc, dia = lens_attachment_dia, tol=0.0, bottom=false) {
     x = bottom ? 
         bx_bot(perc, lens_width, theta1, theta2, thickness/2) : 
         bx_top(perc, lens_width, theta1, theta2, thickness/2);
@@ -21,7 +22,8 @@ module lens_attachment(perc, tol=0.0, bottom=false) {
         by_top(perc, lens_width, theta1, theta2, thickness/2);
     
     translate([x, y, 0])
-    circle(d=1.5 + tol, $fn=100);
+    square([dia+tol, 4], center=true);
+    //circle(d=dia + tol, $fn=100);
 }
 
 module glasses(
@@ -37,8 +39,8 @@ module glasses(
     module bridge(start) {
         x0 = bx_top(start, lens_width, theta1, theta2, thickness);
         y0 = by_top(start, lens_width, theta1, theta2, thickness);
-        x1 = bx_top(start + .06, lens_width, theta1, theta2, thickness);
-        y1 = by_top(start + .06, lens_width, theta1, theta2, thickness);
+        x1 = bx_top(start + .08, lens_width, theta1, theta2, thickness);
+        y1 = by_top(start + .08, lens_width, theta1, theta2, thickness);
         
         polygon([
             [x0 + bridge_distance/2 + thickness , y0],
@@ -115,21 +117,20 @@ module glasses(
             center_of_temple()
             rotate(-90)
             hinge();
+            
+            
         }
         
         
+        // Cut out the lens attachments
+        linear_extrude(100)
         duplicate(x=1)
+        translate([bridge_distance/2 + thickness, 0, 0])
         union() {
                 
             // Lens attachment
-            linear_extrude(100)
-            translate([bridge_distance/2 + thickness + .5, 0, 0])
-            lens_attachment(1-.19, tol=.5);
-            
-            // Lens attachment
-            linear_extrude(100)
-            translate([bridge_distance/2 + thickness - .5, .5, 0])
-            lens_attachment(bridge_start+0.06/2, tol=.5);
+            lens_attachment(0, dia=lens_attachment_dia, tol=.5);
+            lens_attachment(1.0, dia=lens_attachment_dia, tol=.5);
         }
         
         
@@ -163,12 +164,11 @@ module frame_clasp(h=1.25) {
 
     // Lens attachment
     linear_extrude(lens_depth/2+h)
-    translate([bridge_distance/2 + thickness + .5, 0, 0])
-    lens_attachment(1-.19, tol=0);
-    
-    linear_extrude(lens_depth/2+h)
-    translate([bridge_distance/2 + thickness, .65, 0])
-    lens_attachment(bridge_start+0.02, tol=0);
+    translate([bridge_distance/2 + thickness, 0, 0])
+    union() {
+        lens_attachment(0, dia=lens_attachment_dia, tol=0);
+        lens_attachment(1.0, dia=lens_attachment_dia, tol=0);
+    }
 }
 
 // Generate glasses

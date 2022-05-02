@@ -8,7 +8,7 @@
 
     ctx.lineWidth = 3;
 
-    let rand1 = (Math.random() * 20) + 15;
+    let rand1 = (Math.random() * 20) + 15;pnpm create vite
     let rand2 = (Math.random() * 30) + 15;
     let rand3 = (Math.random() * 30);
 
