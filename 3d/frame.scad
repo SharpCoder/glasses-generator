@@ -6,11 +6,11 @@ include <hinge.scad>
 theta1 = 27;
 theta2 = 29;
 lens_width = 43;
-thickness = 3.5;
+thickness = 3.2;
 bridge_distance = 25;
 lens_depth = 3.75;
 bridge_start = 0.22;
-lens_attachment_dia = 1;
+lens_attachment_dia = 1.3;
 
 module lens_attachment(perc, dia = lens_attachment_dia, tol=0.0, bottom=false) {
     x = bottom ? 
@@ -22,8 +22,7 @@ module lens_attachment(perc, dia = lens_attachment_dia, tol=0.0, bottom=false) {
         by_top(perc, lens_width, theta1, theta2, thickness/2);
     
     translate([x, y, 0])
-    square([dia+tol, 4], center=true);
-    //circle(d=dia + tol, $fn=100);
+    square([dia+tol, 5], center=true);
 }
 
 module glasses(
@@ -74,7 +73,7 @@ module glasses(
         union() {
             square([temple_width, temple_height]);
             polygon([
-                [temple_width, y],
+                [temple_width, temple_height],
                 for (t = [0.75: 0.1: theta])
                     [
                         bx_top(t, lens_width, theta1, theta2, thickness)-x, 
@@ -97,12 +96,10 @@ module glasses(
                     
                     linear_extrude(lens_depth)
                     frame(theta1=theta1, theta2=theta2, width=lens_width, thickness=thickness);
-                    
-                    
                     linear_extrude(lens_depth)
                     temple_connector();
                     
-                    
+                    // Interior lens lip
                     linear_extrude(.75)
                     translate([0,0,0])
                     frame(theta1=theta1, theta2=theta2, width=lens_width-1, thickness=thickness);
@@ -114,6 +111,7 @@ module glasses(
             
             // Temple hinges
             duplicate(x=1)
+            translate([1, 0, 0])
             center_of_temple()
             rotate(-90)
             hinge();
@@ -172,6 +170,6 @@ module frame_clasp(h=1.25) {
 }
 
 // Generate glasses
-//glasses();
+glasses();
 
-frame_clasp();
+//frame_clasp();
