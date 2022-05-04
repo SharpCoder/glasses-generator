@@ -4,8 +4,8 @@ include <parameters.scad>
 
 max_temple_height = 5; // How much to extrude upwards, the temple component.
 temple_height = 3; // How much to extrude the part that actually touches the head.
-temple_length = 90; // The length of the main element
-drop_length = 65;   // The length of the drop element
+temple_length = 85; // The length of the main element
+drop_length = 45;   // The length of the drop element
 spacing = 2;        // How deep the pin is, so it can fit inside the hinge.
 fin_width_fat = 10; // How wide to make the base of the fin element.
 fin_width_thin = 3; // How wide to make the neck of the fin element. 
@@ -56,8 +56,12 @@ module temple_2d() {
     otheta = 0;
     
     theta = 45;
-    function x(t) = ox - sin(t-90) * drop_length - drop_length;
+    w = 50;
+    function x(t) = ox - sin(t-90) * w - w;
     function y(t) = oy + cos(t-90) * drop_length;
+    
+    function slope() = cos(theta-90+6);
+    echo(slope());
     
     polygon([ 
         [-fin_width_fat/2, 0],
@@ -71,8 +75,11 @@ module temple_2d() {
             [x(t), y(t)],
         ],
         
+        [x(theta) - 20, y(theta) + 20*slope()],
+        [x(theta) - 20, y(theta) + 20*slope()-fin_width_thin],
         
-        each [for(t = [theta - 3: -1: 0])
+        
+        each [for(t = [theta-6: -1: 0])
             [x(t) - fin_width_thin, y(t)],
         ],
         

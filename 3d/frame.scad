@@ -3,12 +3,12 @@ include <parameters.scad>
 include <hinge.scad>
 
 
-theta1 = 30;
-theta2 = 28;
-lens_width = 43;
+theta1 = 35;
+theta2 = 30;
+lens_width = 46;
 thickness = 3;
 lens_depth = 3.75;
-bridge_distance = 17 - thickness;
+bridge_distance = 18 - thickness;
 bridge_start = 0.2;
 lens_attachment_dia = 1.5;
 
@@ -60,27 +60,44 @@ module glasses(
     module nose_bridge() {
         end = bridge_start;
         start = 0;
-        w = thickness + 3;
+        w = thickness;
         
         p0 = [
-            bx_top(0, lens_width, theta1, theta2, 0), 
-            by_top(0, lens_width, theta1, theta2, 0)
+            bx_top(bridge_start, lens_width, theta1, theta2, thickness/2), 
+            by_top(bridge_start, lens_width, theta1, theta2, thickness/2)
         ];
         
         p1 = [
-            bx_top(bridge_start + .02, lens_width, theta1, theta2, 0), 
-            by_top(bridge_start + .02, lens_width, theta1, theta2, 0)
+            bx_bot(.1, lens_width, theta1, theta2, thickness/2), 
+            by_bot(.1, lens_width, theta1, theta2, thickness/2)
         ];
         
         linear_extrude(lens_depth)
         translate([bridge_distance/2 + thickness/2, -0, 0])
         
         polygon([
-            p0,
-            each bezier(p0[0], p0[1], p0[0], p0[0], p0[0] - w, p1[0] + 5, p1[0], p1[1]),
-            p1,
+            [p0[0]-1, p0[1]],
+            [p0[0], p0[1]],
+            each partial_bezier_top(0, bridge_start, 0.05, lens_width, theta1, theta2, reversed=true),
+            each partial_bezier_bot(0, 0, .15, lens_width, theta1, theta2),
+            
+            
+            each bezier(
+                p1[0]+.5,
+                p1[1],
+                -w-1,
+                w/2,
+                -w*2,
+                w/2,
+                p0[0],
+                p0[1]
+            ),
+            
+            
         ]);
         
+        //cubic_bezier(t, -scale*mod, -scale*mod, w+scale*mod, w+scale*mod+1)
+        //cubic_bezier(t, 0, -theta2-scale, -theta2-scale, 0)
         //polygon(partial_bezier_top(thickness, start, end, lens_width, theta1, theta2));
         
         

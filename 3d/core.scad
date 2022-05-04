@@ -11,8 +11,8 @@ function bx_bot(t, w, theta1, theta2, scale) = cubic_bezier(t, -scale*mod, -scal
 function by_bot(t, w, theta1, theta2, scale) = cubic_bezier(t, 0, -theta2-scale, -theta2-scale, 0);
 
 // Render all the polygon points for a partial bezier curve of the top-half of the frames
-function partial_bezier_top(scale, start, end, w, theta1, theta2) = [for (t = [start: 0.01: end]) 
-    [bx_top(t, w, theta1, theta2, scale), by_top(t, w, theta1, theta2, scale)]
+function partial_bezier_top(scale, start, end, w, theta1, theta2, reversed=false) = [
+    for (t = [start: reversed ? -.01 : 0.01: end]) [bx_top(t, w, theta1, theta2, scale), by_top(t, w, theta1, theta2, scale)]
 ];
 
 // Render all the polygon points for a partial bezier curve of the top-half of the frames
