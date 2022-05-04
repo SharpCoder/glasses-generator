@@ -1,34 +1,25 @@
+include <core.scad>
 include <parameters.scad>
 
-hinge_w = 3.25;
+other = 3.25;
 base_x = 4;
 base_y = 14;
 
 spacing = 2;
 bore = 2.2;
 
-temple_length = 95;
-temple_wall = hinge_w*2+spacing;
+fin_height = 10;
+temple_length = 105;
+temple_wall = fin_height;
 temple_width = 10;
 
 
 drop_angle = 45;
-drop_width = hinge_w+spacing;
-
-// The fin that looks cool at the base
-module fin() {
-    polygon([
-        [0,0],
-        [temple_width/2, 0],
-        [temple_wall/2, 10],
-        [-temple_wall/2, 10],
-        [-temple_width/2,0],
-    ]);
-}
+drop_width = other+spacing;
 
 module thinner() {
-    x0 = hinge_w+spacing;
-    l1 = 50;
+    x0 = other+spacing;
+    l1 = -10;
     
     mirror([0, -1, 0])
     polygon([
@@ -43,7 +34,7 @@ module thinner() {
 }
 
 module pin() {    
-    translate([-hinge_w/2+spacing/2, -7+4.5, 0])
+    translate([temple_wall/2 - .38 - base_x, -7+4.5, 0])
     linear_extrude(spacing)
     difference() {
         union() {
@@ -57,13 +48,12 @@ module pin() {
     }
 }
 
-module temple(reversed=false) {
-
+module temple(reversed=false) {    
     pin();
 
     difference() {
             
-        translate([temple_width/2-temple_width/2, 0, -(hinge_w+spacing)/2])
+        translate([0, 0, -(fin_height-spacing)/2])
         union() {
             
             difference() {
@@ -74,23 +64,24 @@ module temple(reversed=false) {
 
                 }
 
-                w = temple_length+base_y+10;
-                h = 11;
-                translate([-40, 0, (hinge_w+spacing)/2])
+                w = temple_length+base_y;
+                // TODO: where is 6 coming from
+                h = temple_wall+8;
+                translate([-spacing*2, 0, temple_wall])
                 rotate([0, 180-90, 0])
                 translate([-10, -w, 0])
-                linear_extrude(120)
+                linear_extrude(10000)
                 polygon([
                     [0, 0],
                     [h, 4],
                     [h, w-20],
-                    [0, w-0],
+                    [0, w],
                     [0, 0],
                 ]);            
             }
             
-            drop_length = 40;
-            translate([-drop_width/2, -temple_length+base_y-3.7, -10.2])
+            drop_length = 45;
+            translate([-drop_width/2, -temple_length+base_y-4, -10])
             rotate([-drop_angle, 0, 0])
             translate([0,-(base_y+temple_length)/2,0])
             linear_extrude(3)
@@ -100,9 +91,13 @@ module temple(reversed=false) {
 }
 
 
-translate([drop_width, 0, 0])
+translate([drop_width*2, 0, 0])
+rotate([0, 90, 0])
 temple();
 
-translate([-drop_width, 0, 0])
+
+translate([-drop_width*2, 0, 0])
+rotate([0, 270, 0])
 mirror([-1, 0, 0])
 temple();
+

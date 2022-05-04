@@ -80,12 +80,6 @@ module hinge() {
             square([hinge_height(), wall_z], center=true);   
         }
  
-        /*
-        // Cut out one side
-        translate([spacing/2+hinge_w-hex_z+5, -wall_z/2, 0])
-        linear_extrude(10)
-        square([10, 10], center=true);
-        */
     }
 }
 
