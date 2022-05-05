@@ -3,27 +3,32 @@ include <parameters.scad>
 include <hinge.scad>
 
 
-theta1 = 35;
-theta2 = 30;
-lens_width = 46;
-thickness = 3;
+theta1 = 32;
+theta2 = 28;
+lens_width = 47.5;
+thickness = 3.2;
 lens_depth = 3.75;
 bridge_distance = 18 - thickness;
-bridge_start = 0.2;
+bridge_start = 0.15;
 lens_attachment_dia = 1.5;
+temple_width = 6.5;
+
+// If true, minkowski will not be applied
+fast_preview = false;
+
 
 module lens_attachment(dia = lens_attachment_dia, tol=0.0, flip=false, bottom=false) {
-    start = 0.25;
-    end = 0.78;
+    start = 0.3;
+    end = 0.75;
     
     difference() {
         union() {
-            polygon(partial_bezier_top(thickness*.6, start-tol, end+tol, lens_width, theta1, theta2));
-            polygon(partial_bezier_bot(thickness*.6, start-tol, end+tol, lens_width, theta1, theta2));
+            polygon(partial_bezier_top(thickness*.7, start-tol, end+tol, lens_width, theta1, theta2));
+            polygon(partial_bezier_bot(thickness*.7, start-tol, end+tol, lens_width, theta1, theta2));
         }
         union() {
-            polygon(partial_bezier_top(thickness*.4, start-tol, end+tol, lens_width, theta1, theta2));
-            polygon(partial_bezier_bot(thickness*.4, start-tol, end+tol, lens_width, theta1, theta2));
+            polygon(partial_bezier_top(thickness*.3, start-tol, end+tol, lens_width, theta1, theta2));
+            polygon(partial_bezier_bot(thickness*.3, start-tol, end+tol, lens_width, theta1, theta2));
         }
     }
 }
@@ -63,42 +68,37 @@ module glasses(
         w = thickness;
         
         p0 = [
-            bx_top(bridge_start, lens_width, theta1, theta2, thickness/2), 
-            by_top(bridge_start, lens_width, theta1, theta2, thickness/2)
+            bx_top(bridge_start, lens_width, theta1, theta2, thickness), 
+            by_top(bridge_start, lens_width, theta1, theta2, thickness)
         ];
         
         p1 = [
-            bx_bot(.1, lens_width, theta1, theta2, thickness/2), 
-            by_bot(.1, lens_width, theta1, theta2, thickness/2)
+            bx_bot(.2, lens_width, theta1, theta2, thickness), 
+            by_bot(.2, lens_width, theta1, theta2, thickness)
         ];
         
-        linear_extrude(lens_depth)
-        translate([bridge_distance/2 + thickness/2, -0, 0])
+        translate([bridge_distance/2, 0, 0])
+        polygon([        
+            p0,
         
-        polygon([
-            [p0[0]-1, p0[1]],
-            [p0[0], p0[1]],
-            each partial_bezier_top(0, bridge_start, 0.05, lens_width, theta1, theta2, reversed=true),
-            each partial_bezier_bot(0, 0, .15, lens_width, theta1, theta2),
+            each partial_bezier_top(-1, bridge_start, 0.05, lens_width, theta1, theta2, reversed=true),
+            each partial_bezier_bot(-1, 0, .2, lens_width, theta1, theta2),
             
             
             each bezier(
-                p1[0]+.5,
+                p1[0]+2.5,
                 p1[1],
-                -w-1,
-                w/2,
-                -w*2,
-                w/2,
-                p0[0],
+                -w-4,
+                -w,
+                -w+1,
+                w+4,
+                p0[0]-2,
                 p0[1]
             ),
             
             
         ]);
         
-        //cubic_bezier(t, -scale*mod, -scale*mod, w+scale*mod, w+scale*mod+1)
-        //cubic_bezier(t, 0, -theta2-scale, -theta2-scale, 0)
-        //polygon(partial_bezier_top(thickness, start, end, lens_width, theta1, theta2));
         
         
     }
@@ -111,11 +111,10 @@ module glasses(
     
     module center_of_temple() {
         temple_offset()
-        translate([bridge_distance/2 + thickness + hinge_width()/2 - 3/2, hinge_height()/2, 0]) children();
+        translate([bridge_distance/2 + thickness + temple_width - hinge_width()/2 - .5, hinge_height()/2, 0]) children();
     }
     
     module temple_connector() {        
-        temple_width = 4;
         temple_height = hinge_height();
         
         x = bx_top(theta, lens_width, theta1, theta2, thickness);
@@ -163,7 +162,6 @@ module glasses(
             
             // Temple hinges
             duplicate(x=1)
-            translate([.5, 0, 0])
             center_of_temple()
             rotate(-90)
             hinge();
@@ -192,8 +190,14 @@ module glasses(
     bridge(start=bridge_start);
     
     color("blue")
-    duplicate(x=1)
-    nose_bridge();
+    minkowski() {
+        duplicate(x=1)
+        translate([1.5, 0, .5])
+        linear_extrude(lens_depth-1)
+        nose_bridge();
+        
+        sphere(fast_preview ? 0 : .5);
+    }
 
 }
 

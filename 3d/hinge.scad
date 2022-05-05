@@ -9,7 +9,7 @@ bolt_bore = 2;
 spacing = 2;
 base_h = 2;
 
-hinge_w = 4;
+hinge_w = 4-.25;
 hinge_h = 6+3.25;
 hinge_z = 5;
 
@@ -20,6 +20,10 @@ wall_h = base_h + hinge_h - 1.5;
 
 function hinge_height() = hinge_w*2+spacing;
 function hinge_width() = wall_z + hinge_z;
+
+
+// For preview - uncommment following line
+//hinge();
 
 module hinge_wall() {
     
@@ -82,5 +86,3 @@ module hinge() {
  
     }
 }
-
-//hinge();

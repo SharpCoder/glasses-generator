@@ -10,7 +10,7 @@ spacing = 2;        // How deep the pin is, so it can fit inside the hinge.
 fin_width_fat = 10; // How wide to make the base of the fin element.
 fin_width_thin = 3; // How wide to make the neck of the fin element. 
 fin_height = 20;    // How long to make the fin.
-pin_length = 7;     // Total length of the pin.
+pin_length = 6;     // Total length of the pin.
 pin_width = 4;      // Total width of the pin.
     
 // The little pin which hooks into
@@ -47,6 +47,32 @@ module triangle() {
     ]);
 }
 
+
+module cut_out_2() {
+    p0 = [0, 10];
+    p1 = [0, temple_length*2.5];
+    function b(offset) = bezier(
+            p0[0],
+            p0[1],
+            p0[0] + offset,
+            p0[1] - offset,
+    
+            p1[0] + 25 + offset,
+            p1[1] + offset,
+            p1[0],
+            p1[1]+offset
+        );
+    
+    color("red")
+    translate([-100/2, -65, temple_height+15+2])
+    rotate([0, 90, 0])
+    linear_extrude(100)
+    difference() {
+        polygon(b(10));
+        polygon(b(5));
+    }
+}
+
 // The main shape of the temple component
 module temple_2d() {
     
@@ -58,11 +84,9 @@ module temple_2d() {
     theta = 45;
     w = 50;
     function x(t) = ox - sin(t-90) * w - w;
-    function y(t) = oy + cos(t-90) * drop_length;
-    
+    function y(t) = oy + cos(t-90) * drop_length;    
     function slope() = cos(theta-90+6);
-    echo(slope());
-    
+
     polygon([ 
         [-fin_width_fat/2, 0],
         [fin_width_fat/2, 0],
@@ -98,30 +122,29 @@ module cut_out() {
 }
 
 module temple(reversed=false) {
-    
     mirror_x = reversed ? 1 : 0;
     
     mirror([mirror_x, 0, 0])
     union() {
-        difference() {
-            union() {
-                translate([pin_width/2-spacing/2, 0, spacing])
-                rotate([180, 90, 0])
-                linear_extrude(spacing)
-                pin();
-                
+        translate([pin_width/2-(spacing+tol)/2, 0, spacing-1/2])
+        rotate([180, 90, 0])
+        linear_extrude(spacing-tol)
+        pin();
+
+        minkowski() {
+            difference() {
                 linear_extrude(max_temple_height)
-                temple_2d(); 
-                    
+                temple_2d();
+                cut_out();
             }
-            
-            color("orange") cut_out();
-        }    
-        
-        triangle();
+            sphere(.5);               
+        }
+        //triangle();
     }
 }
 
 temple(reversed=false);
 
 translate([25, 0, 0]) temple(reversed=true);
+
+//cut_out();
