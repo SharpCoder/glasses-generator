@@ -31,6 +31,18 @@ function bezier(x0, y0, x1, y1, x2, y2, x3, y3) = [for (t = [0: 0.01: 1.0])
         [cubic_bezier(t, x0, x1, x2, x3), cubic_bezier(t, y0, y1, y2, y3)]
 ];
 
+// Create a loopy shape.
+function loop(base_x=3, offset_left=0, offset_right=0, size_x=0, size_y=0, w=6,length=14) = bezier(
+    offset_left, 
+    0, 
+    -w+size_x,    // x 
+    length-size_y,   // y
+    w-size_x,    // x
+    length,   // y
+    base_x-offset_right, 
+    0
+);
+
 module duplicate(x=0, y=0, z=0, spacing=0) {
     translate([spacing/2, 0, 0])
     children();

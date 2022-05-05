@@ -47,29 +47,11 @@ module triangle() {
     ]);
 }
 
-
-module cut_out_2() {
-    p0 = [0, 10];
-    p1 = [0, temple_length*2.5];
-    function b(offset) = bezier(
-            p0[0],
-            p0[1],
-            p0[0] + offset,
-            p0[1] - offset,
-    
-            p1[0] + 25 + offset,
-            p1[1] + offset,
-            p1[0],
-            p1[1]+offset
-        );
-    
-    color("red")
-    translate([-100/2, -65, temple_height+15+2])
-    rotate([0, 90, 0])
-    linear_extrude(100)
+module loopy() {
     difference() {
-        polygon(b(10));
-        polygon(b(5));
+        polygon(loop());
+        color("red")
+        polygon(loop(size_x=3, size_y=4, offset_left=1, offset_right=1));
     }
 }
 
@@ -140,6 +122,13 @@ module temple(reversed=false) {
             sphere(.5);               
         }
         //triangle();
+        
+        color("red")
+        translate([0, 0, -.5])
+        linear_extrude(temple_height+1)
+        translate([-drop_length/2-5, temple_length + 42.5, 0])
+        rotate(45)
+        loopy();
     }
 }
 
