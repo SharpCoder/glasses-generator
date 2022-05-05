@@ -7,7 +7,7 @@ theta1 = 32;
 theta2 = 28;
 lens_width = 47.5;
 thickness = 3.2;
-lens_depth = 3.75;
+lens_depth = 3 + 1;
 bridge_distance = 18 - thickness;
 bridge_start = 0.15;
 lens_attachment_dia = 1.5;
@@ -153,9 +153,9 @@ module glasses(
                     temple_connector();
                     
                     // Interior lens lip
-                    linear_extrude(.75)
-                    translate([0,0,0])
-                    frame(theta1=theta1, theta2=theta2, width=lens_width-1, thickness=thickness);
+                    linear_extrude(1)
+                    translate([1,0,0])
+                    frame(theta1=theta1-.5, theta2=theta2-1, width=lens_width-2, thickness=thickness);
                 }
                 
             }
@@ -214,10 +214,11 @@ module frame_clasp(h=1.25) {
         );
         
         // Skewed frame for holding the lens in place
+        translate([1,0,0])
         frame(
-            theta1=theta1, 
-            theta2=theta2,
-            width=lens_width-1,
+            theta1=theta1-.5, 
+            theta2=theta2-1,
+            width=lens_width-2,
             thickness=thickness
         );
 
