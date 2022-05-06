@@ -1,4 +1,4 @@
-include <parameters.scad>
+
 
 // Main hinge design
 hex_z = 2;
@@ -9,7 +9,7 @@ bolt_bore = 2;
 spacing = 2;
 base_h = 2;
 
-hinge_w = 4-.25;
+hinge_w = 4+.25;
 hinge_h = 6+3.25;
 hinge_z = 5;
 

@@ -3,19 +3,18 @@ include <parameters.scad>
 include <hinge.scad>
 
 
-theta1 = 32;
-theta2 = 28;
-lens_width = 47.5;
+theta1 = 29;
+theta2 = 26;
+lens_width = 43.5;
 thickness = 3.2;
 lens_depth = 3 + 1;
-bridge_distance = 18 - thickness;
+bridge_distance = 17.5 - thickness;
 bridge_start = 0.15;
 lens_attachment_dia = 1.5;
 temple_width = 6.5;
 
 // If true, minkowski will not be applied
 fast_preview = false;
-
 
 module lens_attachment(dia = lens_attachment_dia, tol=0.0, flip=false, bottom=false) {
     start = 0.3;
@@ -62,14 +61,32 @@ module glasses(
         }
     }
     
+    module gen_silicone_bridge() {
+        
+        translate([-bridge_distance/2, 0, 0])
+        color("orange")
+        difference() {
+            rotate([0, 20, 0])
+            linear_extrude(lens_depth-.5)
+            difference() {
+                square([2,3], center=true);
+                circle(d=1.5, $fn=100);
+            }
+            
+            translate([0, 0, -18])
+            linear_extrude(20)
+            square([10, 10], center=true);
+        }
+    }
+    
     module nose_bridge() {
         end = bridge_start;
         start = 0;
         w = thickness;
         
         p0 = [
-            bx_top(bridge_start, lens_width, theta1, theta2, thickness), 
-            by_top(bridge_start, lens_width, theta1, theta2, thickness)
+            bx_top(bridge_start-.05, lens_width, theta1, theta2, thickness), 
+            by_top(bridge_start-.05, lens_width, theta1, theta2, thickness)
         ];
         
         p1 = [
@@ -78,25 +95,19 @@ module glasses(
         ];
         
         translate([bridge_distance/2, 0, 0])
-        polygon([        
-            p0,
-        
-            each partial_bezier_top(-1, bridge_start, 0.05, lens_width, theta1, theta2, reversed=true),
+        polygon([
+            each partial_bezier_top(-1, bridge_start-.05, 0.05, lens_width, theta1, theta2, reversed=true),
             each partial_bezier_bot(-1, 0, .2, lens_width, theta1, theta2),
-            
-            
             each bezier(
                 p1[0]+2.5,
                 p1[1],
+                -w-6,
                 -w-4,
-                -w-1,
-                -w+1.5,
-                w+10,
-                p0[0]-2,
+                -w+2.5,
+                w,
+                p0[0]+2,
                 p0[1]
             ),
-            
-            
         ]);
         
         
@@ -188,6 +199,14 @@ module glasses(
     color("red")
     linear_extrude(lens_depth)
     bridge(start=bridge_start);
+
+    // The following code is for silicone bridge
+    /*
+    duplicate(x=1)
+    gen_silicone_bridge();
+    */
+    
+    // The following code is for plastic bridge
     
     color("blue")
     minkowski() {
@@ -198,7 +217,6 @@ module glasses(
         
         sphere(fast_preview ? 0 : .5);
     }
-
 }
 
 module frame_clasp(h=1.25) {
